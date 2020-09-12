@@ -254,7 +254,7 @@ static void videoTask(void *arg) {
 	int x, y;
 	bitmap_t *bmp=NULL;
 
-	xWidth=320;
+	xWidth=240;
 	yHight=240;
 	x = (320-xWidth)/2;
     y = ((240-yHight)/2);

@@ -20,7 +20,7 @@
 #include "driver/ledc.h"
 
 /*
- This code displays some fancy graphics on the 320x240 LCD on an ESP-WROVER_KIT board.
+ This code displays some fancy graphics on the 240x240 LCD on an ESP-WROVER_KIT board.
  This example demonstrates the use of both spi_device_transmit as well as
  spi_device_queue_trans/spi_device_get_trans_result and pre-transmit callbacks.
 
@@ -308,8 +308,8 @@ static void send_lines(spi_device_handle_t spi, int ypos, uint16_t *linedata)
     trans[0].tx_data[0]=0x2A;           //Column Address Set
     trans[1].tx_data[0]=0;              //Start Col High
     trans[1].tx_data[1]=0;              //Start Col Low
-    trans[1].tx_data[2]=(320)>>8;       //End Col High
-    trans[1].tx_data[3]=(320)&0xff;     //End Col Low
+    trans[1].tx_data[2]=(240)>>8;       //End Col High
+    trans[1].tx_data[3]=(240)&0xff;     //End Col Low
     trans[2].tx_data[0]=0x2B;           //Page address set
     trans[3].tx_data[0]=ypos>>8;        //Start page high
     trans[3].tx_data[1]=ypos&0xff;      //start page low
@@ -317,7 +317,7 @@ static void send_lines(spi_device_handle_t spi, int ypos, uint16_t *linedata)
     trans[3].tx_data[3]=(ypos+PARALLEL_LINES)&0xff;  //end page low
     trans[4].tx_data[0]=0x2C;           //memory write
     trans[5].tx_buffer=linedata;        //finally send the line data
-    trans[5].length=320*2*8*PARALLEL_LINES;          //Data length, in bits
+    trans[5].length=240*2*8*PARALLEL_LINES;          //Data length, in bits
     trans[5].flags=0; //undo SPI_TRANS_USE_TXDATA flag
 
     //Queue all transactions.
@@ -354,7 +354,7 @@ static int display_pretty_colors(spi_device_handle_t spi)
     uint16_t *lines[2];
     //Allocate memory for the pixel buffers
     for (int i=0; i<2; i++) {
-        lines[i]=heap_caps_malloc(320*PARALLEL_LINES*sizeof(uint16_t), MALLOC_CAP_DMA);
+        lines[i]=heap_caps_malloc(240*PARALLEL_LINES*sizeof(uint16_t), MALLOC_CAP_DMA);
         assert(lines[i]!=NULL);
     }
     int frame=0;
@@ -431,7 +431,7 @@ int runMenu()
         .sclk_io_num=PIN_NUM_CLK,
         .quadwp_io_num=-1,
         .quadhd_io_num=-1,
-        .max_transfer_sz=PARALLEL_LINES*320*2+8
+        .max_transfer_sz=PARALLEL_LINES*240*2+8
     };
     spi_device_interface_config_t devcfg={
 //#ifdef CONFIG_LCD_OVERCLOCK
