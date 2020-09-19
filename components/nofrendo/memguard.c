@@ -60,7 +60,7 @@ static int mem_blockcount = 0;   /* allocated block count */
 static memblock_t *mem_record = NULL;
 
 #define  GUARD_STRING   "GgUuAaRrDdSsTtRrIiNnGgBbLlOoCcKk"
-#define  GUARD_LENGTH   320//256         /* before and after allocated block */
+#define  GUARD_LENGTH   240//256         /* before and after allocated block */
 
 
 /*

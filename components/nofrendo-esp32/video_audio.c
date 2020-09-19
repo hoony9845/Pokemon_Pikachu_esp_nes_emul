@@ -45,7 +45,7 @@
 #define  DEFAULT_SAMPLERATE   33252*2//22100
 #define  DEFAULT_FRAGSIZE     128
 
-#define  DEFAULT_WIDTH        320//256
+#define  DEFAULT_WIDTH        256//256
 #define  DEFAULT_HEIGHT       240//NES_VISIBLE_HEIGHT
 
 int xWidth;
@@ -254,13 +254,13 @@ static void videoTask(void *arg) {
 	int x, y;
 	bitmap_t *bmp=NULL;
 
-	xWidth=240;
+	xWidth=256;
 	yHight=240;
-	x = (320-xWidth)/2;
+	x = 0;//(240-xWidth)/2;
     y = ((240-yHight)/2);
     while(1) {
 		xQueueReceive(vidQueue, &bmp, portMAX_DELAY);//skip one frame to drop to 30
-		xQueueReceive(vidQueue, &bmp, portMAX_DELAY);
+//		xQueueReceive(vidQueue, &bmp, portMAX_DELAY);
 		ili9341_write_frame(x, y, /*DEFAULT_WIDTH, DEFAULT_HEIGHT,*/xWidth,yHight, (const uint8_t **)bmp->line, getXStretch(),getYStretch());
 	}
 }

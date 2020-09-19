@@ -471,7 +471,7 @@ void ili9341_write_frame(const uint16_t xs, const uint16_t ys, const uint16_t wi
     
     for (y=0; y<height; y++) {
         //start line
-        x1 = xs+(width-1);
+        x1 = xs+(240-1);
         y1 = ys+y+(height-1);
         xv = U16x2toU32(xs,x1);
         yv = U16x2toU32((ys+y),y1);
@@ -508,19 +508,20 @@ void ili9341_write_frame(const uint16_t xs, const uint16_t ys, const uint16_t wi
         x = 0;
         GPIO.out_w1ts = dc;
         SET_PERI_REG_BITS(SPI_MOSI_DLEN_REG(SPI_NUM), SPI_USR_MOSI_DBITLEN, 511, SPI_USR_MOSI_DBITLEN_S);
-        while (x<width) {
+        while (x<240) {
 			for (i=0; i<16; i++) {
-                if(data == NULL){
-                    temp[i] = 0;
-                    x += 2;
-                    continue;
-                }
+		                if(data == NULL){
+                		    temp[i] = 0;
+	                	    x += 2;
+		                    continue;
+        		        }
 				int newX=x;
 				int newy=y;
 					//temp[i]==0x0F;
-				if(xStr)newX=newX*0.8;
+				//if(xStr)newX=newX*0.8;
+				newX=newX*1.0666;
 				if(yStr)newy=newy*0.94;
-				if(newX>=32&&!xStr)newX=newX-32;
+				//if(newX>=32&&!xStr)newX=newX-32;
 				x1 = myPalette[(unsigned char)(data[newy][newX])]; 
 				x++;
 				newX++;
@@ -529,14 +530,14 @@ void ili9341_write_frame(const uint16_t xs, const uint16_t ys, const uint16_t wi
 				y1 = myPalette[(unsigned char)(data[newy][newX])]; 
 				x++;
 				newX++;
-				if(!xStr && (x<=32||x>=288))x1=y1=0x00;
+				//if(!xStr && (x<=32||x>=288))x1=y1=0x00;
 				//"ambilight"
 				/*if(!xStr && x<=32)x1 = myPalette[(unsigned char)(data[newy][0])];
 				if(!xStr && x<=32)y1 = myPalette[(unsigned char)(data[newy][0])];
 				if(!xStr && x>=288)x1 = myPalette[(unsigned char)(data[newy][250])];
 				if(!xStr && x>=288)y1 = myPalette[(unsigned char)(data[newy][250])];*/
 				if(!yStr && y>=224)x1=y1=0x00;
-                if(getShowMenu()){
+                		if(getShowMenu()){
 					char actChar=' ';
 					if(y==38)textEnd=0;
 					if(x==40)lineEnd=0;
