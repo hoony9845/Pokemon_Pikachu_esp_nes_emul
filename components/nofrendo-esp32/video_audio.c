@@ -334,7 +334,7 @@ int osd_init()
 		return -1;
 	printf("free heap after recv: %d", xPortGetFreeHeapSize());
 	ili9341_init();
-	ili9341_write_frame(0,0,320,240,NULL,0,0);
+	ili9341_write_frame(0,0,240,240,NULL,0,0);
 	vidQueue=xQueueCreate(1, sizeof(bitmap_t *));
 	xTaskCreatePinnedToCore(&videoTask, "videoTask", 2048, NULL, 5, NULL, 1);
 	osd_initinput();

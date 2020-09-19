@@ -128,7 +128,8 @@ static void  ILI9341_INITIAL ()
     ets_delay_us(200000);                                                             
 
 
-#if (CONFIG_HW_LCD_TYPE == LCD_TYPE_ILI)
+//#if (CONFIG_HW_LCD_TYPE == LCD_TYPE_ILI)
+#if 0
     //************* Start Initial Sequence **********//
     LCD_WriteCommand(0xCF);
     LCD_WriteData(0x00);
@@ -249,13 +250,13 @@ static void  ILI9341_INITIAL ()
     //LCD_WriteData(0x01);
     //LCD_WriteData(0x30);
 
-#endif
-#if (CONFIG_HW_LCD_TYPE == LCD_TYPE_ST)
+#else
 
 //212
 //122
     LCD_WriteCommand(0x36);
-    LCD_WriteData((1<<5)|(1<<6)); //MV 1, MX 1
+//    LCD_WriteData((1<<5)|(1<<6)); //MV 1, MX 1 // rot 90
+    LCD_WriteData(0x00); // rot 0
 
     LCD_WriteCommand(0x3A);
     LCD_WriteData(0x55);
@@ -268,7 +269,8 @@ static void  ILI9341_INITIAL ()
     LCD_WriteData(0x33);
 
     LCD_WriteCommand(0xB7);
-    LCD_WriteData(0x35);
+//    LCD_WriteData(0x35);
+    LCD_WriteData(0x45);
 
     LCD_WriteCommand(0xBB);
     LCD_WriteData(0x2B);
@@ -330,6 +332,8 @@ static void  ILI9341_INITIAL ()
 
     LCD_WriteCommand(0x11);    //Exit Sleep
     ets_delay_us(100000);
+    LCD_WriteCommand(0x21);    //inversion
+    ets_delay_us(100000);
     LCD_WriteCommand(0x29);    //Display on
     ets_delay_us(100000);
 
@@ -366,8 +370,10 @@ static void spi_master_init()
 
     CLEAR_PERI_REG_MASK(SPI_SLAVE_REG(SPI_NUM), SPI_TRANS_DONE << 5);
     SET_PERI_REG_MASK(SPI_USER_REG(SPI_NUM), SPI_CS_SETUP);
-    CLEAR_PERI_REG_MASK(SPI_PIN_REG(SPI_NUM), SPI_CK_IDLE_EDGE);
-    CLEAR_PERI_REG_MASK(SPI_USER_REG(SPI_NUM),  SPI_CK_OUT_EDGE);
+//    CLEAR_PERI_REG_MASK(SPI_PIN_REG(SPI_NUM), SPI_CK_IDLE_EDGE);
+//    CLEAR_PERI_REG_MASK(SPI_USER_REG(SPI_NUM),  SPI_CK_OUT_EDGE);
+    SET_PERI_REG_MASK(SPI_PIN_REG(SPI_NUM), SPI_CK_IDLE_EDGE);
+    SET_PERI_REG_MASK(SPI_USER_REG(SPI_NUM),  SPI_CK_OUT_EDGE);
     CLEAR_PERI_REG_MASK(SPI_CTRL_REG(SPI_NUM), SPI_WR_BIT_ORDER);
     CLEAR_PERI_REG_MASK(SPI_CTRL_REG(SPI_NUM), SPI_RD_BIT_ORDER);
     CLEAR_PERI_REG_MASK(SPI_USER_REG(SPI_NUM), SPI_DOUTDIN);
