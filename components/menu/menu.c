@@ -68,7 +68,8 @@ typedef enum {
 //Place data into DRAM. Constant data gets placed into DROM by default, which is not accessible by DMA.
 DRAM_ATTR static const lcd_init_cmd_t st_init_cmds[]={
     /* Memory Data Access Control, MX=MV=1, MY=ML=MH=0, RGB=0 */
-    {0x36, {(1<<5)|(1<<6)}, 1},
+//    {0x36, {(1<<5)|(1<<6)}, 1}, // rot 90
+    {0x36, {0}, 1}, // rot 0
     /* Interface Pixel Format, 16bits/pixel for RGB/MCU interface */
     {0x3A, {0x55}, 1},
     /* Porch Setting */
@@ -95,6 +96,8 @@ DRAM_ATTR static const lcd_init_cmd_t st_init_cmds[]={
     {0xE1, {0xD0, 0x00, 0x05, 0x0D, 0x0C, 0x06, 0x2D, 0x44, 0x40, 0x0E, 0x1C, 0x18, 0x16, 0x19}, 14},
     /* Sleep Out */
     {0x11, {0}, 0x80},
+    /* Display Inversion ON */ // color inversion
+    {0x21, {0}, 0x80},
     /* Display On */
     {0x29, {0}, 0x80},
     {0, {0}, 0xff}
@@ -231,14 +234,14 @@ void lcd_init(spi_device_handle_t spi)
     vTaskDelay(100 / portTICK_RATE_MS);
 
     //detect LCD type
-    uint32_t lcd_id = lcd_get_id(spi);
+    //uint32_t lcd_id = lcd_get_id(spi);
     int lcd_detected_type = 0;
     int lcd_type;
 
 //    printf("LCD ID: %08X\n", lcd_id);
 //    if ( lcd_id == 0 ) {
         //zero, ili
-        lcd_detected_type = LCD_TYPE_ILI;
+        lcd_detected_type = LCD_TYPE_ST;
 /*        printf("ILI9341 detected.\n");
     } else {
         // none-zero, ST
@@ -253,7 +256,7 @@ void lcd_init(spi_device_handle_t spi)
     lcd_type = LCD_TYPE_ST;
 #elif defined( CONFIG_LCD_TYPE_ILI9341 )
     printf("kconfig: force CONFIG_LCD_TYPE_ILI9341.\n");*/
-    lcd_type = LCD_TYPE_ILI;
+    lcd_type = LCD_TYPE_ST;
 //#endif
     if ( lcd_type == LCD_TYPE_ST ) {
         printf("LCD ST7789V initialization.\n");
@@ -439,7 +442,7 @@ int runMenu()
 /*#else
         .clock_speed_hz=10*1000*1000,           //Clock out at 10 MHz
 #endif*/
-        .mode=0,                                //SPI mode 0
+        .mode=3,                                //SPI mode 3
         .spics_io_num=PIN_NUM_CS,               //CS pin
         .queue_size=7,                          //We want to be able to queue 7 transactions at a time
         .pre_cb=lcd_spi_pre_transfer_callback,  //Specify pre-transfer callback to handle D/C line
