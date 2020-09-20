@@ -224,7 +224,7 @@ void psxcontrollerInit() {
 		printf("PSX controller type 0x%X\n", t);
 	}
 	inpDelay=0;
-	volume=0;
+	volume=4;
 	bright=2;
 }
 
