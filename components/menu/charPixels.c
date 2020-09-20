@@ -66,7 +66,7 @@ void initRomList() {
 //depending on x/y/actChar read and return icon pixel color(iconData.c)
 int getCharPixel(int x, int y, int change, int choosen){
 	int line 	= ((y-3)/18)+1;
-	int charNo 	= (x-26)/16;
+	int charNo 	= (x-26)/8;
 	int lineLength;
 	char actChar;
 	int page = choosen/13;
@@ -95,7 +95,7 @@ int getCharPixel(int x, int y, int change, int choosen){
 	}
 	else return 0x0000;
 	
-	if(getPixel(actChar,(x-26)%16, (y-3)%18)==1)return 0x001F;
+	if(getPixel(actChar,(x-26)%8, (y-3)%18)==1)return 0x001F;
 	return 0x0000;
 }
 

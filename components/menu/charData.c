@@ -563,6 +563,7 @@ bool characters[70][7][6]=	{
 				 
 };
 
+#if 0
 bool errNoChar[14][12]={{0,0,1,1,1,1,1,1,1,1,0,0},
 						{0,1,1,1,1,1,1,1,1,1,1,0},
 						{1,1,1,1,1,1,1,1,1,1,1,1},
@@ -577,31 +578,39 @@ bool errNoChar[14][12]={{0,0,1,1,1,1,1,1,1,1,0,0},
 						{0,0,1,1,1,1,1,1,1,1,0,0},
 						{0,0,1,1,1,1,1,1,1,1,0,0},
 						{0,0,1,0,1,0,0,1,0,1,0,0}};
-					 
+#else
+bool errNoChar[7][6]=		{{1,1,1,1,1,1},
+				 {1,1,0,0,1,1},
+				 {1,0,1,1,0,1},
+				 {1,0,1,1,0,1},
+				 {1,0,1,1,0,1},
+				 {1,1,0,0,1,1},
+				 {1,1,1,1,1,1}};
+#endif
 
 bool getPixel(char actChar, int xMod, int yMod){
-	if(xMod<2 || xMod>13 || yMod<2 || yMod>15) return 0;
+	if(xMod<1 || xMod>6 || yMod<2 || yMod>15) return 0;
 	else{
 		if(actChar==' ')return 0;
 		else if(actChar>96 && actChar<123){
-			return characters[actChar-97+26][(yMod-2)/2][(xMod-2)/2];
+			return characters[actChar-97+26][(yMod-2)/2][(xMod-1)];
 		}
 		else if(actChar>64 && actChar<91){
-			return characters[actChar-65][(yMod-2)/2][(xMod-2)/2];
+			return characters[actChar-65][(yMod-2)/2][(xMod-1)];
 		}
 		else if(actChar>47 && actChar<58){
-			return characters[actChar-48+52][(yMod-2)/2][(xMod-2)/2];
+			return characters[actChar-48+52][(yMod-2)/2][(xMod-1)];
 		}
 		else{
-			if(actChar=='-')return characters[69][(yMod-2)/2][(xMod-2)/2];
-			else if(actChar==')')return characters[68][(yMod-2)/2][(xMod-2)/2];
-			else if(actChar=='(')return characters[67][(yMod-2)/2][(xMod-2)/2];
-			else if(actChar==':')return characters[66][(yMod-2)/2][(xMod-2)/2];
-			else if(actChar==',')return characters[65][(yMod-2)/2][(xMod-2)/2];
-			else if(actChar=='.')return characters[64][(yMod-2)/2][(xMod-2)/2];
-			else if(actChar=='!')return characters[63][(yMod-2)/2][(xMod-2)/2];
-			else if(actChar=='?')return characters[62][(yMod-2)/2][(xMod-2)/2];
-			else return errNoChar[yMod-2][xMod-2];
+			if(actChar=='-')return characters[69][(yMod-2)/2][(xMod-1)];
+			else if(actChar==')')return characters[68][(yMod-2)/2][(xMod-1)];
+			else if(actChar=='(')return characters[67][(yMod-2)/2][(xMod-1)];
+			else if(actChar==':')return characters[66][(yMod-2)/2][(xMod-1)];
+			else if(actChar==',')return characters[65][(yMod-2)/2][(xMod-1)];
+			else if(actChar=='.')return characters[64][(yMod-2)/2][(xMod-1)];
+			else if(actChar=='!')return characters[63][(yMod-2)/2][(xMod-1)];
+			else if(actChar=='?')return characters[62][(yMod-2)/2][(xMod-1)];
+			else return errNoChar[yMod-2][xMod-1];
 		}
 	}
 };
