@@ -254,9 +254,21 @@ static void  ILI9341_INITIAL ()
 
 //212
 //122
+
+    // 0 rotate
+//  LCD_WriteCommand(0x36);
+//  LCD_WriteData(0x00);
+
+    // 90 rotate
+//  LCD_WriteCommand(0x36);
+//  LCD_WriteData((1<<5)|(1<<6)); //MV 1, MX 1
+
+    // 180 rotate
     LCD_WriteCommand(0x36);
-//    LCD_WriteData((1<<5)|(1<<6)); //MV 1, MX 1 // rot 90
-    LCD_WriteData(0x00); // rot 0
+    LCD_WriteData(0xc0);
+    LCD_WriteCommand(0x37);
+    LCD_WriteData(0x00);
+    LCD_WriteData(0x50);
 
     LCD_WriteCommand(0x3A);
     LCD_WriteData(0x55);

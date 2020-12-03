@@ -68,8 +68,10 @@ typedef enum {
 //Place data into DRAM. Constant data gets placed into DROM by default, which is not accessible by DMA.
 DRAM_ATTR static const lcd_init_cmd_t st_init_cmds[]={
     /* Memory Data Access Control, MX=MV=1, MY=ML=MH=0, RGB=0 */
+//    {0x36, {0}, 1}, // rot 0
 //    {0x36, {(1<<5)|(1<<6)}, 1}, // rot 90
-    {0x36, {0}, 1}, // rot 0
+    {0x36, {0xc0}, 1}, // rot 180
+    {0x37, {0x00, 0x50}, 2}, // rot 180
     /* Interface Pixel Format, 16bits/pixel for RGB/MCU interface */
     {0x3A, {0x55}, 1},
     /* Porch Setting */
