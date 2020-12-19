@@ -531,7 +531,8 @@ void ili9341_write_frame(const uint16_t xs, const uint16_t ys, const uint16_t wi
 				int newy=y;
 					//temp[i]==0x0F;
 				//if(xStr)newX=newX*0.8;
-				newX=newX*1.0666;
+				//newX=newX*1.0666;
+				newX=newX+8;
 				if(yStr)newy=newy*0.94;
 				//if(newX>=32&&!xStr)newX=newX-32;
 				x1 = myPalette[(unsigned char)(data[newy][newX])]; 

@@ -260,7 +260,7 @@ static void videoTask(void *arg) {
     y = ((240-yHight)/2);
     while(1) {
 		xQueueReceive(vidQueue, &bmp, portMAX_DELAY);//skip one frame to drop to 30
-//		xQueueReceive(vidQueue, &bmp, portMAX_DELAY);
+		xQueueReceive(vidQueue, &bmp, portMAX_DELAY);
 		ili9341_write_frame(x, y, /*DEFAULT_WIDTH, DEFAULT_HEIGHT,*/xWidth,yHight, (const uint8_t **)bmp->line, getXStretch(),getYStretch());
 	}
 }
