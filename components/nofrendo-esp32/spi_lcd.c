@@ -414,7 +414,7 @@ static void spi_master_init()
 
 extern uint16_t myPalette[];
 
-char *menuText[10] = {"brightness46  0.","volume82      9."," .","hor stretch1  5.","vert stretch3 7."," .","  stretch can.", " cause graphic.", "   problems!.","*"};
+char *menuText[4] = {"save state 4.","load state 6.", "volume82      9.","*"};
 bool arrow[9][9] = {{0,0,0,0,0,0,0,0,0},
 					{0,0,0,0,1,0,0,0,0},
 					{0,0,0,1,1,1,0,0,0},
@@ -553,50 +553,50 @@ void ili9341_write_frame(const uint16_t xs, const uint16_t ys, const uint16_t wi
                 		if(getShowMenu()){
 					char actChar=' ';
 					if(y==38)textEnd=0;
-					if(x==40)lineEnd=0;
+					if(x==2)lineEnd=0;
 					int line =(y-38)/18;
-					int charNo=(x-40)/16;
-					if(x<32 || x>286 || y<34 || y>206);
-					else if(x<40 || x>280 || y<38 || y>202)x1=y1=0x0F;
+					int charNo=(x-2)/16;
+					if(x<0 || x>240 || y<34 || y>206);
+					else if(x<2 || x>280 || y<38 || y>202)x1=y1=0x0F;
 					else{
 						if(!lineEnd && !textEnd){ 
 							x1=y1=0x00;
 							actChar=menuText[line][charNo];
 							//printf("char %c, x = %d, y = %d{\n",actChar,x,y);
 							//color c = [b](0to31)*1 + [g](0to31)*31 + [r] (0to31)*1024 +0x8000 --> x1=y1=c; !? 
-							if(actChar=='2' && arrow[8-((y-38)%18)/2][((x-40)%16)/2])x1=y1=0xDDDD;
-							else if(actChar=='4' && arrow[((x-40)%16)/2][((y-38)%18)/2])x1=y1=0xDDDD;
-							else if(actChar=='6' && arrow[8-((x-40)%16)/2][8-((y-38)%18)/2])x1=y1=0xDDDD;
-							else if(actChar=='8' && arrow[((y-38)%18)/2][((x-40)%16)/2])x1=y1=0xDDDD;
-							else if(actChar=='1' && buttonA[((y-38)%18)/2][((x-40)%16)/2])x1=y1=0xDDDD;
-							else if(actChar=='3' && buttonB[((y-38)%18)/2][((x-40)%16)/2])x1=y1=0xDDDD;
+							if(actChar=='2' && arrow[8-((y-38)%18)/2][((x-2)%16)/2])x1=y1=0xDDDD;
+							else if(actChar=='4' && arrow[((x-2)%16)/2][((y-38)%18)/2])x1=y1=0xDDDD;
+							else if(actChar=='6' && arrow[8-((x-2)%16)/2][8-((y-38)%18)/2])x1=y1=0xDDDD;
+							else if(actChar=='8' && arrow[((y-38)%18)/2][((x-2)%16)/2])x1=y1=0xDDDD;
+							else if(actChar=='1' && buttonA[((y-38)%18)/2][((x-2)%16)/2])x1=y1=0xDDDD;
+							else if(actChar=='3' && buttonB[((y-38)%18)/2][((x-2)%16)/2])x1=y1=0xDDDD;
 							else if(actChar=='5'){
-								if(xStr && enabled[((y-38)%18)/2][((x-40)%16)/2])x1=y1=31*31+0x8000;
-								else if(!xStr && disabled[((y-38)%18)/2][((x-40)%16)/2])x1=y1=31*1024+0x8000;
+								if(xStr && enabled[((y-38)%18)/2][((x-2)%16)/2])x1=y1=31*31+0x8000;
+								else if(!xStr && disabled[((y-38)%18)/2][((x-2)%16)/2])x1=y1=31*1024+0x8000;
 								else x1=y1=0x0F;;
 							}
 							else if(actChar=='7'){ 
-								if(yStr && enabled[((y-38)%18)/2][((x-40)%16)/2])x1=y1=31*31+0x8000;
-								else if(!yStr && disabled[((y-38)%18)/2][((x-40)%16)/2])x1=y1=31*1024+0x8000;
+								if(yStr && enabled[((y-38)%18)/2][((x-2)%16)/2])x1=y1=31*31+0x8000;
+								else if(!yStr && disabled[((y-38)%18)/2][((x-2)%16)/2])x1=y1=31*1024+0x8000;
 								else x1=y1=0x0F;
 							}
 							else if(actChar=='0'){
-								if(scale[((y-38)%18)/2][((x-40)%16)/2] && (((x-40)%16)/2)< getBright()*2)x1=y1=0xFFFF;
-								else if (scale[((y-38)%18)/2][((x-40)%16)/2] && (((x-40)%16)/2)>= getBright()*2)x1=y1=0xDDDD;
+								if(scale[((y-38)%18)/2][((x-2)%16)/2] && (((x-2)%16)/2)< getBright()*2)x1=y1=0xFFFF;
+								else if (scale[((y-38)%18)/2][((x-2)%16)/2] && (((x-2)%16)/2)>= getBright()*2)x1=y1=0xDDDD;
 								else x1=y1=0x0F;
 								setBrightness(getBright());
 							}
 							else if(actChar=='9'){
-								if(getVolume()==0 && disabled[((y-38)%18)/2][((x-40)%16)/2])x1=y1=31*1024+0x8000;
+								if(getVolume()==0 && disabled[((y-38)%18)/2][((x-2)%16)/2])x1=y1=31*1024+0x8000;
 								else x1=y1=0x0F;;
 									
 								if(getVolume()>0){
-									if(scale[((y-38)%18)/2][((x-40)%16)/2] && (((x-40)%16)/2)< getVolume()*2)x1=y1=0xFFFF;
-									else if (scale[((y-38)%18)/2][((x-40)%16)/2] && (((x-40)%16)/2)>= getVolume()*2)x1=y1=0xDDDD;
+									if(scale[((y-38)%18)/2][((x-2)%16)/2] && (((x-2)%16)/2)< getVolume()*2)x1=y1=0xFFFF;
+									else if (scale[((y-38)%18)/2][((x-2)%16)/2] && (((x-2)%16)/2)>= getVolume()*2)x1=y1=0xDDDD;
 									else x1=y1=0x0F;
 								}
 							}
-							else if((actChar<47 || actChar>57) && peGetPixel(actChar,(x-40)%16,(y-38)%18))x1=y1=0xFFFF;//0x55;
+							else if((actChar<47 || actChar>57) && peGetPixel(actChar,(x-2)%16/2,(y-38)%18))x1=y1=0xFFFF;//0x55;
 							else x1=y1=0x0F;
 							if(actChar=='.'){lineEnd=1;x1=y1=0x0F;}
 							if(actChar=='*'){textEnd=1;x1=y1=0x0F;}

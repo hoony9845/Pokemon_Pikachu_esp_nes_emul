@@ -114,6 +114,7 @@ int psxReadInput() {
 			if(bright>0)bright-=1;
 			inpDelay=15;
 		}
+#if 0
 		if(gpio_get_level(35)==1 && inpDelay==0){
 			getYStretch() ? setYStretch(0) : setYStretch(1);
 			inpDelay=15;
@@ -122,6 +123,7 @@ int psxReadInput() {
 			getXStretch() ? setXStretch(0) : setXStretch(1);
 			inpDelay=15;
 		}
+#endif
 	}
 	//Bit0 Bit1 Bit2 Bit3 Bit4 Bit5 Bit6 Bit7
     //SLCT           STRT UP   RGHT DOWN LEFT
@@ -136,6 +138,13 @@ int psxReadInput() {
 		if(gpio_get_level(35)==1)b2b1-=8192*2;//4096;//B
 		if(gpio_get_level(13)==1)b2b1-=8192;//A
 	}
+
+	if(gpio_get_level(17)==1 && gpio_get_level(14)==1 && inpDelay==0){
+		showMenu=showMenu ? 0 : 1;
+		inpDelay=15;
+		b2b1|=1;
+	}
+
 	//Button2
 	if(gpio_get_level(16)==1 && inpDelay==0){
 		showMenu=showMenu ? 0 : 1;
