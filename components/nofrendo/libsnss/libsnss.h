@@ -344,6 +344,8 @@ SNSS_RETURN_CODE SNSS_SkipNextBlock (SNSS_FILE *snssFile);
 SNSS_RETURN_CODE SNSS_ReadBlock (SNSS_FILE *snssFile, SNSS_BLOCK_TYPE blockType);
 SNSS_RETURN_CODE SNSS_WriteBlock (SNSS_FILE *snssFile, SNSS_BLOCK_TYPE blockType);
 
+SNSS_RETURN_CODE SNSS_WriteFileHeader (SNSS_FILE *snssFile);
+
 /* support functions */
 const char *SNSS_GetErrorString (SNSS_RETURN_CODE code);
 

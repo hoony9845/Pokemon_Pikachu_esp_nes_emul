@@ -14,6 +14,14 @@
 #include <string.h>
 #include <libsnss.h>
 
+#define USE_SAVE_PARTITION
+
+extern int esp_write_save_partition(void *buf, size_t size);
+extern int esp_read_save_partition(void *buf, size_t size);
+extern void esp_clear_save_partion_offset();
+extern void esp_move_save_partion_offset(int offset);
+extern void esp_erase_save_partion();
+
 /**************************************************************************/
 /* This section deals with endian-specific code. */
 /**************************************************************************/
@@ -62,11 +70,16 @@ static SNSS_RETURN_CODE
 SNSS_ReadBlockHeader (SnssBlockHeader *header, SNSS_FILE *snssFile)
 {
    char headerBytes[12];
-
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(headerBytes, 12) != 1) {
+      return SNSS_READ_FAILED;
+   }
+#else
    if (fread (headerBytes, 12, 1, snssFile->fp) != 1)
    {
       return SNSS_READ_FAILED;
    }
+#endif
 
    strncpy (header->tag, &headerBytes[0], TAG_LENGTH);
    header->tag[4] = '\0';
@@ -100,10 +113,16 @@ SNSS_WriteBlockHeader (SnssBlockHeader *header, SNSS_FILE *snssFile)
    headerBytes[10] = ((char *) &tempInt)[2];
    headerBytes[11] = ((char *) &tempInt)[3];
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_write_save_partition(headerBytes, 12) != 1) {
+      return SNSS_WRITE_FAILED;
+   }
+#else
    if (fwrite (headerBytes, 12, 1, snssFile->fp) != 1)
    {
       return SNSS_WRITE_FAILED;
    }
+#endif
 
    return SNSS_OK;
 }
@@ -151,10 +170,17 @@ SNSS_GetErrorString (SNSS_RETURN_CODE code)
 static SNSS_RETURN_CODE 
 SNSS_ReadFileHeader (SNSS_FILE *snssFile)
 {
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(snssFile->headerBlock.tag, 4) != 1)
+   {
+      return SNSS_READ_FAILED;
+   }
+#else
    if (fread (snssFile->headerBlock.tag, 4, 1, snssFile->fp) != 1)
    {
       return SNSS_READ_FAILED;
    }
+#endif
  
    if (0 != strncmp(snssFile->headerBlock.tag, "SNSS", 4))
    {
@@ -163,10 +189,16 @@ SNSS_ReadFileHeader (SNSS_FILE *snssFile)
    
    snssFile->headerBlock.tag[4] = '\0';
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(&snssFile->headerBlock.numberOfBlocks, sizeof (unsigned int)) != 1) {
+      return SNSS_READ_FAILED;
+   }
+#else
    if (fread (&snssFile->headerBlock.numberOfBlocks, sizeof (unsigned int), 1, snssFile->fp) != 1)
    {
       return SNSS_READ_FAILED;
    }
+#endif
 
    snssFile->headerBlock.numberOfBlocks = swap32 (snssFile->headerBlock.numberOfBlocks);
 
@@ -175,7 +207,7 @@ SNSS_ReadFileHeader (SNSS_FILE *snssFile)
 
 /**************************************************************************/
 
-static SNSS_RETURN_CODE 
+SNSS_RETURN_CODE
 SNSS_WriteFileHeader (SNSS_FILE *snssFile)
 {
    unsigned int tempInt;
@@ -189,10 +221,16 @@ SNSS_WriteFileHeader (SNSS_FILE *snssFile)
    writeBuffer[6] = ((char *) &tempInt)[2];
    writeBuffer[7] = ((char *) &tempInt)[3];
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_write_save_partition(writeBuffer, 8) != 1) {
+      return SNSS_WRITE_FAILED;
+   }
+#else
    if (fwrite (writeBuffer, 8, 1, snssFile->fp) != 1)
    {
       return SNSS_WRITE_FAILED;
    }
+#endif
 
    return SNSS_OK;
 }
@@ -214,6 +252,13 @@ SNSS_OpenFile (SNSS_FILE **snssFile, const char *filename, SNSS_OPEN_MODE mode)
 
    (*snssFile)->mode = mode;
 
+#ifdef USE_SAVE_PARTITION
+   esp_clear_save_partion_offset();
+   if (SNSS_OPEN_WRITE == mode) {
+      esp_erase_save_partion();
+      (*snssFile)->headerBlock.numberOfBlocks = 0;
+   }
+#else
    if (SNSS_OPEN_READ == mode)
    {
       (*snssFile)->fp = fopen (filename, "rb");
@@ -230,6 +275,7 @@ SNSS_OpenFile (SNSS_FILE **snssFile, const char *filename, SNSS_OPEN_MODE mode)
       *snssFile = NULL;
       return SNSS_OPEN_FAILED;
    }
+#endif
 
    if (SNSS_OPEN_READ == mode)
    {
@@ -237,7 +283,11 @@ SNSS_OpenFile (SNSS_FILE **snssFile, const char *filename, SNSS_OPEN_MODE mode)
    }
    else
    {
+#ifdef USE_SAVE_PARTITION
+      return SNSS_OK;
+#else
       return SNSS_WriteFileHeader(*snssFile);
+#endif
    }
 }
 
@@ -255,6 +305,8 @@ SNSS_CloseFile (SNSS_FILE **snssFile)
       return SNSS_OK;
    }
 
+#ifdef USE_SAVE_PARTITION
+#else
    if (SNSS_OPEN_WRITE == (*snssFile)->mode)
    {
       prevLoc = ftell((*snssFile)->fp);
@@ -273,6 +325,7 @@ SNSS_CloseFile (SNSS_FILE **snssFile)
    {
       return SNSS_CLOSE_FAILED;
    }
+#endif
 
    free(*snssFile);
    *snssFile = NULL;
@@ -287,17 +340,27 @@ SNSS_GetNextBlockType (SNSS_BLOCK_TYPE *blockType, SNSS_FILE *snssFile)
 {
    char tagBuffer[TAG_LENGTH + 1];
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(tagBuffer, TAG_LENGTH) != 1) {
+      return SNSS_READ_FAILED;
+   }
+#else
    if (fread (tagBuffer, TAG_LENGTH, 1, snssFile->fp) != 1)
    {
       return SNSS_READ_FAILED;
    }
+#endif
    tagBuffer[TAG_LENGTH] = '\0';
 
+#ifdef USE_SAVE_PARTITION
+   esp_move_save_partion_offset(-TAG_LENGTH);
+#else
    /* reset the file pointer to the start of the block */
    if (fseek (snssFile->fp, -TAG_LENGTH, SEEK_CUR) != 0)
    {
       return SNSS_READ_FAILED;
    }
+#endif
 
    /* figure out which type of block it is */
    if (strcmp (tagBuffer, "BASR") == 0)
@@ -375,11 +438,16 @@ SNSS_ReadBaseBlock (SNSS_FILE *snssFile)
    {
       return SNSS_READ_FAILED;
    }
-
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(blockBytes, MIN (header.blockLength, BASE_BLOCK_LENGTH)) != 1) {
+      return SNSS_READ_FAILED;
+   }
+#else
    if (fread (blockBytes, MIN (header.blockLength, BASE_BLOCK_LENGTH), 1, snssFile->fp) != 1)
    {
       return SNSS_READ_FAILED;
    }
+#endif
 
    snssFile->baseBlock.regA = blockBytes[0x0];
    snssFile->baseBlock.regX = blockBytes[0x1];
@@ -443,10 +511,16 @@ SNSS_WriteBaseBlock (SNSS_FILE *snssFile)
    blockBytes[0x192F] = snssFile->baseBlock.spriteRamAddress;
    blockBytes[0x1930] = snssFile->baseBlock.tileXOffset;
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_write_save_partition(blockBytes, BASE_BLOCK_LENGTH) != 1) {
+      return SNSS_WRITE_FAILED;
+   }
+#else
    if (fwrite (blockBytes, BASE_BLOCK_LENGTH, 1, snssFile->fp) != 1)
    {
       return SNSS_WRITE_FAILED;
    }
+#endif
 
    snssFile->headerBlock.numberOfBlocks++;
 
@@ -467,10 +541,16 @@ SNSS_ReadVramBlock (SNSS_FILE *snssFile)
       return SNSS_READ_FAILED;
    }
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(snssFile->vramBlock.vram, MIN (header.blockLength, VRAM_16K)) != 1) {
+      return SNSS_READ_FAILED;
+   }
+#else
    if (fread (snssFile->vramBlock.vram, MIN (header.blockLength, VRAM_16K), 1, snssFile->fp) != 1)
    {
       return SNSS_READ_FAILED;
    }
+#endif
 
    snssFile->vramBlock.vramSize = header.blockLength;
 
@@ -494,10 +574,16 @@ SNSS_WriteVramBlock (SNSS_FILE *snssFile)
       return returnCode;
    }
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_write_save_partition(snssFile->vramBlock.vram, snssFile->vramBlock.vramSize) != 1) {
+      return SNSS_WRITE_FAILED;
+   }
+#else
    if (fwrite (snssFile->vramBlock.vram, snssFile->vramBlock.vramSize, 1, snssFile->fp) != 1)
    {
       return SNSS_WRITE_FAILED;
    }
+#endif
 
    snssFile->headerBlock.numberOfBlocks++;
 
@@ -518,16 +604,27 @@ SNSS_ReadSramBlock (SNSS_FILE *snssFile)
       return SNSS_READ_FAILED;
    }
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(&snssFile->sramBlock.sramEnabled, 1) != 1) {
+      return SNSS_READ_FAILED;
+   }
+#else
    if (fread (&snssFile->sramBlock.sramEnabled, 1, 1, snssFile->fp) != 1)
    {
       return SNSS_READ_FAILED;
    }
+#endif
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(&snssFile->sramBlock.sram, MIN (header.blockLength - 1, SRAM_8K)) != 1) {
+   }
+#else
    /* read blockLength - 1 bytes to get all of the SRAM */
    if (fread (&snssFile->sramBlock.sram, MIN (header.blockLength - 1, SRAM_8K), 1, snssFile->fp) != 1)
    {
       return SNSS_READ_FAILED;
    }
+#endif
 
    /* SRAM size is the size of the block - 1 (SRAM enabled byte) */
    snssFile->sramBlock.sramSize = header.blockLength - 1;
@@ -552,6 +649,14 @@ SNSS_WriteSramBlock (SNSS_FILE *snssFile)
       return returnCode;
    }
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_write_save_partition(&snssFile->sramBlock.sramEnabled, 1) != 1) {
+      return SNSS_WRITE_FAILED;
+   }
+   if (esp_write_save_partition(snssFile->sramBlock.sram, snssFile->sramBlock.sramSize) != 1) {
+      return SNSS_WRITE_FAILED;
+   }
+#else
    if (fwrite (&snssFile->sramBlock.sramEnabled, 1, 1, snssFile->fp) != 1)
    {
       return SNSS_WRITE_FAILED;
@@ -561,6 +666,7 @@ SNSS_WriteSramBlock (SNSS_FILE *snssFile)
    {
       return SNSS_WRITE_FAILED;
    }
+#endif
 
    snssFile->headerBlock.numberOfBlocks++;
 
@@ -588,11 +694,18 @@ SNSS_ReadMapperBlock (SNSS_FILE *snssFile)
       return SNSS_OUT_OF_MEMORY;
    }
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(blockBytes, MIN (0x8 + 0x10 + 0x80, header.blockLength)) != 1) {
+      free(blockBytes);
+      return SNSS_READ_FAILED;
+   }
+#else
    if (fread (blockBytes, MIN (0x8 + 0x10 + 0x80, header.blockLength), 1, snssFile->fp) != 1)
    {
       free(blockBytes);
       return SNSS_READ_FAILED;
    }
+#endif
 
    for (i = 0; i < 4; i++)
    {
@@ -649,10 +762,16 @@ SNSS_WriteMapperBlock (SNSS_FILE *snssFile)
 
    memcpy (&blockBytes[0x18], &snssFile->mapperBlock.extraData.mapperData, 0x80);
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_write_save_partition(blockBytes, MAPPER_BLOCK_LENGTH) != 1) {
+      return SNSS_WRITE_FAILED;
+   }
+#else
    if (fwrite (blockBytes, MAPPER_BLOCK_LENGTH, 1, snssFile->fp) != 1)
    {
       return SNSS_WRITE_FAILED;
    }
+#endif
 
    snssFile->headerBlock.numberOfBlocks++;
 
@@ -697,10 +816,16 @@ SNSS_ReadSoundBlock (SNSS_FILE *snssFile)
       return SNSS_READ_FAILED;
    }
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_read_save_partition(snssFile->soundBlock.soundRegisters, MIN (header.blockLength, 0x16)) != 1) {
+      return SNSS_READ_FAILED;
+   }
+#else
    if (fread (snssFile->soundBlock.soundRegisters, MIN (header.blockLength, 0x16), 1, snssFile->fp) != 1)
    {
       return SNSS_READ_FAILED;
    }
+#endif
 
    return SNSS_OK;
 }
@@ -722,10 +847,16 @@ SNSS_WriteSoundBlock (SNSS_FILE *snssFile)
       return returnCode;
    }
 
+#ifdef USE_SAVE_PARTITION
+   if (esp_write_save_partition(snssFile->soundBlock.soundRegisters, SOUND_BLOCK_LENGTH) != 1) {
+      return SNSS_WRITE_FAILED;
+   }
+#else
    if (fwrite (snssFile->soundBlock.soundRegisters, SOUND_BLOCK_LENGTH, 1, snssFile->fp) != 1)
    {
       return SNSS_WRITE_FAILED;
    }
+#endif
 
    snssFile->headerBlock.numberOfBlocks++;
 

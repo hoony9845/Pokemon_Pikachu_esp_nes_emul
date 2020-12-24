@@ -336,6 +336,7 @@ static void load_mapperblock(nes_t *state, SNSS_FILE *snssFile)
    mmc_setcontext(state->mmc);
 }
 
+#define USE_SAVE_PARTITION
 
 int state_save(void)
 {
@@ -343,6 +344,10 @@ int state_save(void)
    SNSS_RETURN_CODE status;
    char fn[PATH_MAX + 1], ext[5];
    nes_t *machine;
+#ifdef USE_SAVE_PARTITION
+   unsigned char blocks[SNSS_UNKNOWN_BLOCK];
+   SNSS_BLOCK_TYPE i;
+#endif
 
    /* get the pointer to our NES machine context */
    machine = nes_getcontextptr();
@@ -360,6 +365,48 @@ int state_save(void)
    if (SNSS_OK != status)
       goto _error;
 
+#ifdef USE_SAVE_PARTITION
+   for (i = 0; i < SNSS_UNKNOWN_BLOCK; i++)
+      blocks[i] = 0;
+
+   if (0 == save_baseblock(machine, snssFile)) {
+      snssFile->headerBlock.numberOfBlocks++;
+      blocks[SNSS_BASR] = 1;
+   }
+
+   if (0 == save_vramblock(machine, snssFile)) {
+      snssFile->headerBlock.numberOfBlocks++;
+      blocks[SNSS_VRAM] = 1;
+   }
+
+   if (0 == save_sramblock(machine, snssFile)) {
+      snssFile->headerBlock.numberOfBlocks++;
+      blocks[SNSS_SRAM] = 1;
+   }
+
+   if (0 == save_soundblock(machine, snssFile)) {
+      snssFile->headerBlock.numberOfBlocks++;
+      blocks[SNSS_SOUN] = 1;
+   }
+
+   if (0 == save_mapperblock(machine, snssFile)) {
+      snssFile->headerBlock.numberOfBlocks++;
+      blocks[SNSS_MPRD] = 1;
+   }
+
+   SNSS_WriteFileHeader(snssFile);
+
+   log_printf("headerBlock.numberOfBlocks : %d\n", snssFile->headerBlock.numberOfBlocks);
+
+   for (i = 0; i < SNSS_UNKNOWN_BLOCK; i++) {
+      if (blocks[i]) {
+         status = SNSS_WriteBlock(snssFile, i);
+         if (SNSS_OK != status)
+            goto _error;
+      }
+   }
+
+#else
    /* now get all of our blocks */
    if (0 == save_baseblock(machine, snssFile))
    {
@@ -395,6 +442,7 @@ int state_save(void)
       if (SNSS_OK != status)
          goto _error;
    }
+#endif
 
    /* close the file, we're done */
    status = SNSS_CloseFile(&snssFile);

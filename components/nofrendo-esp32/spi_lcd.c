@@ -414,7 +414,7 @@ static void spi_master_init()
 
 extern uint16_t myPalette[];
 
-char *menuText[4] = {"save state 4.","load state 6.", "volume82      9.","*"};
+char *menuText[10] = {"     MENU.", ".", "Save state 4.","Load state 6.", ".", "Volume82      9.", "*", "*", "*"};
 bool arrow[9][9] = {{0,0,0,0,0,0,0,0,0},
 					{0,0,0,0,1,0,0,0,0},
 					{0,0,0,1,1,1,0,0,0},
@@ -556,8 +556,10 @@ void ili9341_write_frame(const uint16_t xs, const uint16_t ys, const uint16_t wi
 					if(x==2)lineEnd=0;
 					int line =(y-38)/18;
 					int charNo=(x-2)/16;
-					if(x<0 || x>240 || y<34 || y>206);
-					else if(x<2 || x>280 || y<38 || y>202)x1=y1=0x0F;
+//					if(x<=0 || x>=240 || y<34 || y>206);
+//					else if(x<2 || x>240 || y<38 || y>202)x1=y1=0x0F;
+					if(x<2 || x>240 || y<34 || y>172);
+					else if(x<2 || x>240 || y<38 || y>168)x1=y1=0x0F;
 					else{
 						if(!lineEnd && !textEnd){ 
 							x1=y1=0x00;

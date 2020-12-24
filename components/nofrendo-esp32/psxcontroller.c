@@ -85,6 +85,8 @@ bool getShowMenu(){
 	return showMenu;
 }
 
+extern int state_save(void);
+extern int state_load(void);
 
 int psxReadInput() {
 	/*int b1, b2;
@@ -107,12 +109,14 @@ int psxReadInput() {
 			inpDelay=15;
 		}
 		if(gpio_get_level(32)==1 && inpDelay==0){
-			if(bright<4)bright+=1;
+			state_load();
 			inpDelay=15;
+			showMenu = 0;
 		}
 		if(gpio_get_level(39)==1 && inpDelay==0){
-			if(bright>0)bright-=1;
+			state_save();
 			inpDelay=15;
+			showMenu = 0;
 		}
 #if 0
 		if(gpio_get_level(35)==1 && inpDelay==0){
@@ -142,7 +146,6 @@ int psxReadInput() {
 	if(gpio_get_level(17)==1 && gpio_get_level(14)==1 && inpDelay==0){
 		showMenu=showMenu ? 0 : 1;
 		inpDelay=15;
-		b2b1|=1;
 	}
 
 	//Button2
