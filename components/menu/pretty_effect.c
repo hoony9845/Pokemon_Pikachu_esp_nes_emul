@@ -145,11 +145,11 @@ void pretty_effect_calc_lines(uint16_t *dest, int line, int frame, int linect)
 	if(inputDelay>0)inputDelay-=1;
 	if(gpio_get_level(34)==1 && inputDelay==0 && choosen>0){
 		choosen-=1;
-		inputDelay=200;
+		inputDelay=100;
 	}
 	if(gpio_get_level(33)==1 && inputDelay==0 && choosen<lineMax){
 		choosen+=1;
-		inputDelay=200;
+		inputDelay=100;
 	}
 	if(gpio_get_level(13)==1) selRom=choosen;
 	if(gpio_get_level(12)==1){
