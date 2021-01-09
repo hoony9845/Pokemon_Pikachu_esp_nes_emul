@@ -88,6 +88,9 @@ bool getShowMenu(){
 extern int state_save(void);
 extern int state_load(void);
 
+bool preA=0;
+bool preB=0;
+
 int psxReadInput() {
 	/*int b1, b2;
 
@@ -118,16 +121,14 @@ int psxReadInput() {
 			inpDelay=15;
 			showMenu = 0;
 		}
-#if 0
 		if(gpio_get_level(35)==1 && inpDelay==0){
-			getYStretch() ? setYStretch(0) : setYStretch(1);
+			getTurboB() ? setTurboB(0) : setTurboB(1);
 			inpDelay=15;
 		}
 		if(gpio_get_level(13)==1&& inpDelay==0){
-			getXStretch() ? setXStretch(0) : setXStretch(1);
+			getTurboA() ? setTurboA(0) : setTurboA(1);
 			inpDelay=15;
 		}
-#endif
 	}
 	//Bit0 Bit1 Bit2 Bit3 Bit4 Bit5 Bit6 Bit7
     //SLCT           STRT UP   RGHT DOWN LEFT
@@ -139,8 +140,35 @@ int psxReadInput() {
 		if(gpio_get_level(39)==1)b2b1-=128;//left
 		if(gpio_get_level(17)==1)b2b1-=1;//select
 		if(gpio_get_level(14)==1)b2b1-=8;//start
-		if(gpio_get_level(35)==1)b2b1-=8192*2;//4096;//B
-		if(gpio_get_level(13)==1)b2b1-=8192;//A
+		if(gpio_get_level(35)==1) {
+			if (getTurboB()) {
+				if (!preB) {
+					b2b1-=8192*2;//4096;//B
+					preB = 1;
+				} else {
+					preB = 0;
+				}
+			} else {
+				b2b1-=8192*2;//4096;//B
+			}
+		} else {
+			preB = 0;
+		}
+		if(gpio_get_level(13)==1) {
+			if (getTurboA()) {
+				if (!preA) {
+					b2b1-=8192;//A
+					preA = 1;
+				} else {
+					preA = 0;
+				}
+			} else {
+				b2b1-=8192;//A
+			}
+		} else {
+			preA = 0;
+		}
+
 	}
 
 	if(gpio_get_level(17)==1 && gpio_get_level(14)==1 && inpDelay==0){

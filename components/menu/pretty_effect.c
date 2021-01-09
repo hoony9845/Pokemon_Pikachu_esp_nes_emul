@@ -35,12 +35,31 @@ int selRom;
 bool xStretch;
 bool yStretch;
 
+bool turboA;
+bool turboB;
+
 void setBright(int bright){
 	setBr(bright);
 }
 	
 bool peGetPixel(char peChar, int pe1, int pe2){
 	return cpGetPixel(peChar,pe1,pe2);
+}
+
+bool getTurboA(){
+	return turboA;
+}
+
+bool getTurboB(){
+	return turboB;
+}
+
+void setTurboA(bool en) {
+	turboA=en;
+}
+
+void setTurboB(bool en) {
+	turboB=en;
 }
 
 bool getYStretch(){
@@ -202,6 +221,8 @@ esp_err_t pretty_effect_init()
 	lineMax = 0;
 	yStretch=0;
 	xStretch=0;
+	turboA=0;
+	turboB=0;
 	initRomList();
 	initGPIO(34);
 	initGPIO(35);

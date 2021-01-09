@@ -31,6 +31,14 @@ void setSelRom(int selR);
 
 void freeMem();
 
+bool getTurboA();
+
+bool getTurboB();
+
+void setTurboA(bool en);
+
+void setTurboB(bool en);
+
 bool getYStretch();
 
 bool getXStretch();
