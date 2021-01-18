@@ -261,7 +261,7 @@ static void videoTask(void *arg) {
     while(1) {
 		xQueueReceive(vidQueue, &bmp, portMAX_DELAY);//skip one frame to drop to 30
 		xQueueReceive(vidQueue, &bmp, portMAX_DELAY);
-		ili9341_write_frame(x, y, /*DEFAULT_WIDTH, DEFAULT_HEIGHT,*/xWidth,yHight, (const uint8_t **)bmp->line, getXStretch(),getYStretch());
+		ili9341_write_frame(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, (const uint8_t **)bmp->line, getXStretch(),getYStretch());
 	}
 }
 

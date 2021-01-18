@@ -486,7 +486,7 @@ void ili9341_write_frame(const uint16_t xs, const uint16_t ys, const uint16_t wi
     
     for (y=0; y<height; y++) {
         //start line
-        x1 = xs+(240-1);
+        x1 = xs+(width-1);
         y1 = ys+y+(height-1);
         xv = U16x2toU32(xs,x1);
         yv = U16x2toU32((ys+y),y1);
@@ -530,37 +530,27 @@ void ili9341_write_frame(const uint16_t xs, const uint16_t ys, const uint16_t wi
 	                	    x += 2;
 		                    continue;
         		        }
-				int newX=x;
-				int newy=y;
-					//temp[i]==0x0F;
-				//if(xStr)newX=newX*0.8;
-				//newX=newX*1.0666;
-				newX=newX+8;
-				if(yStr)newy=newy*0.94;
-				//if(newX>=32&&!xStr)newX=newX-32;
-				x1 = myPalette[(unsigned char)(data[newy][newX])]; 
-				x++;
-				newX++;
-                //if(xStr)newX=newX*0.8;
-				//if(yStr)newy=newy*0.94;
-				y1 = myPalette[(unsigned char)(data[newy][newX])]; 
-				x++;
-				newX++;
-				//if(!xStr && (x<=32||x>=288))x1=y1=0x00;
-				//"ambilight"
-				/*if(!xStr && x<=32)x1 = myPalette[(unsigned char)(data[newy][0])];
-				if(!xStr && x<=32)y1 = myPalette[(unsigned char)(data[newy][0])];
-				if(!xStr && x>=288)x1 = myPalette[(unsigned char)(data[newy][250])];
-				if(!xStr && x>=288)y1 = myPalette[(unsigned char)(data[newy][250])];*/
-				if(!yStr && y>=224)x1=y1=0x00;
+				int newX=x+8;
+				int newy=y+10;
+				if (newy >= height) {
+				   x1 = 0;
+				   y1 = 0;
+				   x+=2;
+				   newX+=2;
+				} else {
+				   x1 = myPalette[(unsigned char)(data[newy][newX])]; 
+				   x++;
+				   newX++;
+				   y1 = myPalette[(unsigned char)(data[newy][newX])]; 
+				   x++;
+				   newX++;
+				}
                 		if(getShowMenu()){
 					char actChar=' ';
 					if(y==38)textEnd=0;
 					if(x==2)lineEnd=0;
 					int line =(y-38)/18;
 					int charNo=(x-2)/16;
-//					if(x<=0 || x>=240 || y<34 || y>206);
-//					else if(x<2 || x>240 || y<38 || y>202)x1=y1=0x0F;
 					if(x<2 || x>240 || y<34 || y>172);
 					else if(x<2 || x>240 || y<38 || y>168)x1=y1=0x0F;
 					else{

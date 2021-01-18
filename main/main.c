@@ -130,8 +130,10 @@ esp_err_t event_handler(void *ctx, system_event_t *event)
     return ESP_OK;
 }
 
+extern int  vid_setmode(int width, int height);
 int app_main(void)
 {
+	vid_setmode(256, 240);
 	romPartition=runMenu();
 	printf("NoFrendo start!\n");
 	nofrendo_main(0, NULL);
