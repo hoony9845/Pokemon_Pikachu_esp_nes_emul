@@ -3,7 +3,7 @@ ESP32-NESEMU, a Nintendo Entertainment System emulator for the ESP32
 
 original:  https://github.com/MittisBootloop/esp32_nesemu_wemosmini
 
-video: https://youtu.be/_KE9Y-RXnzA
+video: https://youtu.be/8eZadN7_EwI
 
 Warning
 -------
