@@ -1,11 +1,9 @@
 ESP32-NESEMU, a Nintendo Entertainment System emulator for the ESP32
 ====================================================================
 
-This is the quick and dirty port of Nofrendo, a Nintendo Entertainment System emulator (original by Espressif, https://github.com/espressif/esp32-nesemu).
-I've added (even more dirty) multi Rom support and a little Menu with sound-, fullscreen- and brightness-settings. Fullscreen can cause graphical
-glitches and it has bad sound.
+original:  https://github.com/MittisBootloop/esp32_nesemu_wemosmini
 
-ESP32+Display+Battery in a NES Controller: https://youtu.be/-xrElh8Uz_s
+video: https://youtu.be/_KE9Y-RXnzA
 
 Warning
 -------
@@ -16,56 +14,29 @@ This is a proof-of-concept and not an official application note. As such, this c
 Compiling
 ---------
 
-You can compile this code with espressifs esp-idf (ESP32) or you can download a precompiled version here:
-	https://drive.google.com/open?id=1vhh_dH3Y5HFa4yqkVhevmMNTjaeFxtNw
+1) You can compile this code with espressifs esp-idf (ESP32) 
+branch: release/v3.2
+commit: 9ae3df7ec27496d351938542c6c5390ea802fc06
 
-(I've compiled it with the idf version: v3.2-dev-39-gaaf12390)
+2) You can use prebuilt images from prebuilt_images/
 
-Display
--------
-
-To display the NES output, please connect a 320x240 ili9341-based SPI display to the ESP32 in this way:
-
-    =====  =======================
-    Pin    GPIO
-    =====  =======================
-    MISO   25
-    MOSI   23
-    CLK    19
-    CS     22
-    DC     21
-    RST    18
-    LED    27
-    =====  =======================
-
-Also connect the power supply and ground. For now, the LCD is controlled using a SPI peripheral, fed using the 2nd CPU. This is less than ideal; feeding
-the SPI controller using DMA is better, but was left out due to this being a proof of concept.
-
-
-Controller
+Keys
 ----------
 
+Up, Down, Right, Left, Select, Start, B, A 
 
-    | Button | GPIO |
-	| ---    | ---  |
-    | UP	 | 34	|
-	| DOWN   | 33	|
-	| RIGHT  | 32   |
-	| LEFT   | 39   |
-	| SELECT | 17   |
-	| START  | 14   |
-	| B	     | 35   |
-	| A	     | 13   |
-	| ON/OFF | 12   |
-	| MENU	 | 16   |
+meun key : Select + Start
 
-	
-Connect also 3.3V to the Buttons
 
-Sound
------
+Menu (Select + Start)
+---------
 
-Connect one Speaker-Pin to GPIO 26 and the other one to GND
+Save State (Left Key)
+Load State (Right Key)
+Volume (Up/Down Key)
+Turbo A key (A key)
+Turbo B key (B key)
+
 
 ROM
 ---
