@@ -1,0 +1,39 @@
+main board,,,
+PartNUM,Value,Part,
+C1,100nF,CC1608,
+C2,10uf,Chip Tantal A size 10uF 6.3V,
+C3,10uf,Chip Tantal A size 10uF 6.3V,
+C4,100nF,CC1608,
+C5,10uF,CC2012,
+IC1,,TP4056,https://www.eleparts.co.kr/goods/view?no=9650852
+J2,,UJC-HP-3-SMT-TR,"https://www.digikey.com/en/products/detail/cui-devices/UJC-HP-3-SMT-TR/12173367
+https://www.devicemart.co.kr/goods/view?no=12718371"
+R1,470,RR0603,
+R2,12K,RR0603,
+R3,1.2K,RR0603,
+R4,1K,RR0603,
+R5,1K,RR0603,
+R7,12K,RR0603,
+R8,1K,RR0603,
+R9,100,RR0603,
+BLUE,,LED_SML0603,
+RED,,LED_SML0603,
+RN1,10k,3216 Array Resistor,
+RN2,10k,3216 Array Resistor,
+T1,,FS8205A,https://www.eleparts.co.kr/goods/view?no=6575693
+U$1,,DW01A,https://www.eleparts.co.kr/goods/view?no=8482676
+U1,,ESP-WROOM-32,* The shield can must be removed.
+U2,,NCP1117ST33T3G,https://www.devicemart.co.kr/goods/view?no=10861130
+,,ST7789 Display module,"*Need to modify to fit case.
+https://www.aliexpress.com/item/32880846744.html?spm=a2g0s.9042311.0.0.32364c4dDbUy25"
+,,400mAh Lithium polymer 503030,https://www.devicemart.co.kr/goods/view?no=12710298
+,,"SK-12D02 slide switch knob heigh 4mm, 2EA","https://www.devicemart.co.kr/goods/view?no=14566
+https://www.aliexpress.com/item/32800296150.html?spm=a2g0o.productlist.0.0.685451fdJq3Rm6&algo_pvid=efdf64cd-5dcc-48fb-bcbc-d2057e956b24&algo_expid=efdf64cd-5dcc-48fb-bcbc-d2057e956b24-1&btsid=0b0a555616127873903374744e3b96&ws_ab_test=searchweb0_0,searchweb201602_,searchweb201603_"
+,,,
+pogo board,,,
+PartNUM,Value,Part,
+,,"U10H1 pogo pin, 4EA","http://item.gmarket.co.kr/Item?goodscode=807712177
+replacement(P75-B1): https://www.adafruit.com/product/2430"
+,470,1/4w Lead Resistor,
+,,2.54mm pitch single male 4 pin  header,
+,,CP2102 USB to TTL converter module,https://www.devicemart.co.kr/goods/view?no=1324910
