@@ -100,8 +100,8 @@ DRAM_ATTR static const lcd_init_cmd_t st_init_cmds[]={
     {0x11, {0}, 0x80},
     /* Display Inversion ON */ // color inversion
     {0x21, {0}, 0x80},
-    /* Display On */
-    {0x29, {0}, 0x80},
+    /* Display OFF */
+    {0x28, {0}, 0x80},
     {0, {0}, 0xff}
 };
 
@@ -160,8 +160,8 @@ DRAM_ATTR static const lcd_init_cmd_t ili_init_cmds[]={
     {0xB6, {0x0A, 0x82, 0x27, 0x00}, 4},
     /* Sleep out */
     {0x11, {0}, 0x80},
-    /* Display on */
-    {0x29, {0}, 0x80},
+    /* Display off */
+    {0x28, {0}, 0x80},
     {0, {0}, 0xff},
 };
 
@@ -350,6 +350,23 @@ static void send_line_finish(spi_device_handle_t spi)
     }
 }
 
+DRAM_ATTR static const lcd_init_cmd_t lcd_on_cmds[]={
+    {0x29, {0}, 0x80},
+    {0, {0}, 0xff}
+};
+
+void lcd_on(spi_device_handle_t spi)
+{
+    int cmd = 0;
+    while (lcd_on_cmds[cmd].databytes!=0xff) {
+        lcd_cmd(spi, lcd_on_cmds[cmd].cmd);
+        lcd_data(spi, lcd_on_cmds[cmd].data, lcd_on_cmds[cmd].databytes&0x1F);
+        if (lcd_on_cmds[cmd].databytes&0x80) {
+            vTaskDelay(100 / portTICK_RATE_MS);
+        }
+        cmd++;
+    }
+}
 
 //Simple routine to generate some patterns and send them to the LCD. Don't expect anything too
 //impressive. Because the SPI driver handles transactions in the background, we can calculate the next line
@@ -368,6 +385,11 @@ static int display_pretty_colors(spi_device_handle_t spi)
     int calc_line=0;
 
     while(1) {
+	    if (frame == 1) {
+		send_line_finish(spi);
+		lcd_on(spi);
+		sending_line = -1;
+	    }
         //gpio_set_level(27, 0);
 		frame++;
         for (int y=0; y<240; y+=PARALLEL_LINES) {
@@ -383,11 +405,14 @@ static int display_pretty_colors(spi_device_handle_t spi)
             //The line set is queued up for sending now; the actual sending happens in the
             //background. We can go on to calculate the next line set as long as we do not
             //touch line[sending_line]; the SPI sending process is still reading from that.
-			if(getSelRom()!=12345){
-				freeMem();
-				return getSelRom();
-			}
+            if(getSelRom()!=12345){
+		if (frame == 1) {
+		    lcd_on(spi);
 		}
+                freeMem();
+                return getSelRom();
+            }
+        }
     }
 	
 	return 0;
