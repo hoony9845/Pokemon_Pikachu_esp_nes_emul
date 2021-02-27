@@ -88,45 +88,55 @@ void setSelRom(int selR){
 int getSelRom(){
 	return selRom;
 }
-//!!! Colors repeat after 3Bit(example: 001 = light green, 111 = max green -> 1000 = again light green),
-//		 so all values over (dec) 7 start to repeat the color, but they are stored in 5bits!!!  
-//returns a 16bit rgb Color (1Bit + 15Bit bgr), values for each Color from 0-31
-//(MSB=? + 5Bits blue + 5Bits red + 5Bits green)
-int rgbColor(int red, int green, int blue){
-	return 0x8000+blue*1024+red*32+green;
+
+#ifdef CONFIG_LCD_FACE_1
+#define pixels_w	220
+#define pixels_h	102
+#define pixels_x1	((240 - pixels_w) / 2)
+#define pixels_x2	(pixels_x1 + pixels_w)
+#define pixels_y1	((240 - pixels_h) / 2)
+#define pixels_y2	(pixels_y1 + pixels_h)
+#define bg_color	0x41fe
+#endif
+
+#ifdef CONFIG_LCD_FACE_2
+#define bg_color	0xffff
+#endif
+
+
+int getBackground(){
+	return bg_color;
 }
 
-int getNoise(){
-	whiteN=rand()%8;
-	return rgbColor(whiteN,whiteN,whiteN);
-}
 
-//Grab a rgb16 pixel from the esp32_tiles image, scroll part of it in
+
 static inline uint16_t bootScreen(int x, int y, int yOff, int bootTV){
 	if(gpio_get_level(14)==1)test=0;
-	if(bootTV<slow*251 && bootTV>slow*150) return getNoise();
-	else if(bootTV>0){
-		if(x>250 && x<284 && y>210 && y<228){
-			int xAct = ((x-250)/2)+96;
-			int yAct = ((y-210)/2)+210;
-			if(pixels[yAct+30][xAct]<0x8000+1000)return 0x8000+31;
-			else return getNoise();
+#ifdef CONFIG_LCD_FACE_1
+	if(y>=pixels_y1 && y < pixels_y2) {
+		if (x>=pixels_x1 && x < pixels_x2){
+			return pixels[x-pixels_x1][y-pixels_y1];
+		} else {
+			return getBackground();
 		}
-		return getNoise();
+	} else {
+			return getBackground();
 	}
-	if(x>=105 && x <=216){
-	if(y<65 && pixels[y][x-104]!=0x0000 ){
-		return pixels[y][x-104];
+#else
+	if (x>=114 && x<=240 && y >=0 && y <= 78) { // ribbon
+		return pixels[x][y];
+	} else if (x>=31 && x<=52 && y >= 105 && y <= 134) { // left eye
+		return pixels[x-31][y-105];
+	} else if (x>=182 && x<=203 && y >= 105 && y <= 134) { // right eye
+		return pixels[x-182][y-105];
+	} else if (x>=103 && x<=137 && y >= 132 && y <= 157) { // nose
+		return pixels[x-103][33+y-132];
+	} else {
+		return getBackground();
 	}
-	else y=y-yOff/8;
-	
-	if(y<65 || pixels[y][x-104]==0x0000){		
-		return getNoise();
-	}
-
-    return pixels[y][x-104];}
-	else return getNoise();
+#endif
 }
+
 
 //run "boot screen" (intro) and later menu to choose a rom
 static inline uint16_t get_bgnd_pixel(int x, int y, int yOff, int bootTV, int choosen1)
@@ -215,7 +225,7 @@ esp_err_t pretty_effect_init()
 	slow=4;
     yOff=slow*880;
 	bootTV=slow*250;
-	test=slow*6000;
+	test=slow*1500;
 	choosen=0;
 	inputDelay=0;
 	lineMax = 0;

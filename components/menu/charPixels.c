@@ -60,7 +60,16 @@ void initRomList() {
 	charOff=0;
 	change=0;
 }
-					 
+
+#ifdef CONFIG_LCD_FACE_1
+#define chr_color	0xa3ff  // yellow
+#endif
+
+#ifdef CONFIG_LCD_FACE_2
+#define chr_color	0xf7f8  // pink
+#endif
+
+
 //get depending on x/y value the actual char from lines array
 //depending on x/y/actChar return color/black if char value is true/false(charData.c)
 //depending on x/y/actChar read and return icon pixel color(iconData.c)
@@ -95,7 +104,7 @@ int getCharPixel(int x, int y, int change, int choosen){
 	}
 	else return 0x0000;
 	
-	if(getPixel(actChar,(x-26)%8, (y-3)%18)==1)return 0x001F;
+	if(getPixel(actChar,(x-26)%8, (y-3)%18)==1)return chr_color;
 	return 0x0000;
 }
 
