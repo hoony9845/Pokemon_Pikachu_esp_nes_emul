@@ -307,6 +307,7 @@ static void  ILI9341_INITIAL ()
     LCD_WriteData(0xA4);
     LCD_WriteData(0xA1);
 
+#if CONFIG_LCD_REV0
     LCD_WriteCommand(0xE0);
     LCD_WriteData(0xD0);
     LCD_WriteData(0x00);
@@ -338,6 +339,39 @@ static void  ILI9341_INITIAL ()
     LCD_WriteData(0x18);
     LCD_WriteData(0x16);
     LCD_WriteData(0x19);
+#else
+    LCD_WriteCommand(0xE0);
+    LCD_WriteData(0x00);
+    LCD_WriteData(0x19);
+    LCD_WriteData(0x1E);
+    LCD_WriteData(0x0A);
+    LCD_WriteData(0x09);
+    LCD_WriteData(0x15);
+    LCD_WriteData(0x3D);
+    LCD_WriteData(0x44);
+    LCD_WriteData(0x51);
+    LCD_WriteData(0x12);
+    LCD_WriteData(0x03);
+    LCD_WriteData(0x00);
+    LCD_WriteData(0x3F);
+    LCD_WriteData(0x3F);
+
+    LCD_WriteCommand(0xE1);
+    LCD_WriteData(0x00);
+    LCD_WriteData(0x19);
+    LCD_WriteData(0x1E);
+    LCD_WriteData(0x0A);
+    LCD_WriteData(0x09);
+    LCD_WriteData(0x15);
+    LCD_WriteData(0x3D);
+    LCD_WriteData(0x44);
+    LCD_WriteData(0x51);
+    LCD_WriteData(0x12);
+    LCD_WriteData(0x03);
+    LCD_WriteData(0x00);
+    LCD_WriteData(0x3F);
+    LCD_WriteData(0x3F);
+#endif
 
 #endif
 
