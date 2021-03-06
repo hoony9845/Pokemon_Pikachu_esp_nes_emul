@@ -1,3 +1,3 @@
 example:
 
-python [path eps-idf]/esp-idf/components/esptool_py/esptool/esptool.py --chip esp32 --port [path ttyusb: ex: /dev/ttyUSB0] --baud 921600 --before default_reset --after hard_reset write_flash -z --flash_mode dio --flash_freq 40m --flash_size detect 0x1000 bootloader.bin 0x10000 nesemu.bin 0x8000 partitions.bin
+python [path eps-idf]/esp-idf/components/esptool_py/esptool/esptool.py --chip esp32 --port [path ttyusb: ex: /dev/ttyUSB0] --baud 921600 --before default_reset --after hard_reset write_flash -z --flash_mode dio --flash_freq 40m --flash_size detect 0x1000 bootloader.bin 0x10000 nesemu_face1_rev1.bin 0x8000 partitions.bin
